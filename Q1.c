@@ -10,7 +10,6 @@ void *read1()
 	int a;
 	a=counter;
 	printf("In First Reader\n");
-	//sleep(2);
 	printf("Value of Shared Variable after first read is %d\n",counter);
 	pthread_mutex_unlock(&l1);
 }
@@ -40,7 +39,7 @@ int main()
 	int i;
 	for(i=1;i<=2;i++)
 	{
-		printf("<<<<<| CASE %d |>>>>>\n",i);
+	    printf("<<<<<| CASE %d |>>>>>\n",i);
 	    pthread_create(&t3,NULL,write1,NULL);
 	    pthread_create(&t1,NULL,read1,NULL);
 	    pthread_create(&t2,NULL,read2,NULL);
