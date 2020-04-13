@@ -1,7 +1,7 @@
-#include <semaphore.h>
-#include <unistd.h>
 #include<stdio.h>
+#include <unistd.h>
 #include<pthread.h>
+#include <semaphore.h>
 
 sem_t sem1;
 int shared=10;
