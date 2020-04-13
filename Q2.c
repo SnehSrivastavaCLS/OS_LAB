@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <semaphore.h>
-#define MaxItems 5 
-#define BufferSize 5 
+#define MaxItems 5
+#define BufferSize 5
 
 sem_t empty;
 sem_t full;
@@ -13,63 +13,52 @@ int buffer[BufferSize];
 sem_t mutex;
 
 void *producer(void *pno)
-{   
+{
     int item,i;
-    for(i = 0; i < MaxItems; i++) 
+    for(i = 0; i < MaxItems; i++)
 	{
-        item = rand(); 
-        sem_wait(&empty);
-        sem_wait(&mutex);
-        buffer[in] = item;
-        printf("Producer %d: Insert Item %d at %d\n", *((int *)pno),buffer[in],in);
-        in = (in+1)%BufferSize;
-        sem_post(&mutex);
-        sem_post(&full);
-    }
+            item = rand();
+            sem_wait(&empty);
+            sem_wait(&mutex);
+            buffer[in] = item;
+            printf("Producer %d: Insert Item %d at %d\n", *((int *)pno),buffer[in],in);
+            in = (in+1)%BufferSize;
+            sem_post(&mutex);
+            sem_post(&full);
+        }
 }
 void *consumer(void *cno)
 {
-	int i;
-    for(i = 0; i < MaxItems; i++) 
+    int i;
+    for(i = 0; i < MaxItems; i++)
 	{
-        sem_wait(&full);
-        sem_wait(&mutex);
-        int item = buffer[out];
-        printf("Consumer %d: Remove Item %d from %d\n",*((int *)cno),item, out);
-        out = (out+1)%BufferSize;
-        sem_post(&mutex);
-        sem_post(&empty);
-    }
+            sem_wait(&full);
+            sem_wait(&mutex);
+            int item = buffer[out];
+            printf("Consumer %d: Remove Item %d from %d\n",*((int *)cno),item, out);
+            out = (out+1)%BufferSize;
+            sem_post(&mutex);
+            sem_post(&empty);
+        }
 }
 int main()
-{   
-	pthread_t pro[5],con[5];
+{
+    pthread_t pro[5],con[5];
     sem_init(&mutex,0,1);
     sem_init(&empty,0,BufferSize);
     sem_init(&full,0,0);
-	int a[5] = {1,2,3,4,5};
+    int a[5] = {1,2,3,4,5};
     int i;
-	for(i = 0; i < 5; i++) 
-	{
+    for(i = 0; i < 5; i++)
         pthread_create(&pro[i], NULL, (void *)producer, (void *)&a[i]);
-    }
-    for(i = 0; i < 5; i++) 
-	{
+    for(i = 0; i < 5; i++)
         pthread_create(&con[i], NULL, (void *)consumer, (void *)&a[i]);
-    }
-
-    for(i = 0; i < 5; i++) 
-	{
+    for(i = 0; i < 5; i++)
         pthread_join(pro[i], NULL);
-    }
-    for(i = 0; i < 5; i++) 
-	{
+    for(i = 0; i < 5; i++)
         pthread_join(con[i], NULL);
-    }
-	sem_destroy(&mutex);
+    sem_destroy(&mutex);
     sem_destroy(&empty);
     sem_destroy(&full);
-
     return 0;
-    
 }
